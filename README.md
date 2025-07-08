@@ -1,5 +1,40 @@
-# Vue 3 + TypeScript + Vite
+# AVAYL Coding Challenge – Text Chunking App
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Thank you Alex and Rida for the invitation to participate in this challenge. I enjoyed working on this and would love to continue contributing.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+
+## Current Progress
+
+- Fully working frontend and backend integration
+- Users can input text, adjust page height, and view chunked output
+- The app uses a clean component-based structure with composables for logic separation
+
+Thanks again for the opportunity.
+
+## Setup
+
+### Backend
+
+```
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+flask run
+```
+
+
+### Frontend
+
+```
+cd frontend
+npm install
+npm run dev
+```
+
+Create a `.env` file inside the frontend folder and set the backend API URL:
+
+```
+VITE_API_URL=http://127.0.0.1:8000
+```
+
