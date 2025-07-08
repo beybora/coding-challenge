@@ -1,10 +1,9 @@
-<script setup lang="ts">
-</script>
 
 <template>
-
+    <EditorView />
 </template>
 
-<style scoped>
+<script setup lang="ts">
+import EditorView from './views/EditorView.vue';
 
-</style>
+</script>
