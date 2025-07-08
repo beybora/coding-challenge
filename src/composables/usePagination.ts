@@ -21,7 +21,8 @@ export function usePagination(initialHtml: string | string[] = '') {
       'overflow-hidden w-[794px] max-w-[calc(100%-40px)] px-[80px] py-[96px]'
     p.contentEditable = 'true'
     p.dataset.page = String(pageNo++)
-    p.style.minHeight = pageHeight.value + 'px'
+    // set fixed height 
+    p.style.height = pageHeight.value + 'px'
     return p
   }
 
@@ -44,10 +45,11 @@ export function usePagination(initialHtml: string | string[] = '') {
     })
     host.textContent = ''
 
-    // distribute nodes
+    // create first page
     let page = makePage()
     host.appendChild(page)
 
+    // loop over nodes and fill pages until full
     Array.from(stash.childNodes).forEach(node => {
       page.appendChild(node)
       if (page.scrollHeight > pageHeight.value) {
@@ -55,28 +57,27 @@ export function usePagination(initialHtml: string | string[] = '') {
         page = makePage()
         page.appendChild(node)
         host.appendChild(page)
-      }
+      } 
     })
 
     busy = false
 
-    // restore caret & focus
+    // restore caret & focus 
     if (keep && sel) {
       sel.removeAllRanges()
       sel.addRange(keep)
-      const editable = keep.startContainer.parentElement?.closest('[contenteditable]') as HTMLElement | null
+      const editable = keep.startContainer
+        .parentElement?.closest('[contenteditable]') as HTMLElement | null
       editable?.focus({ preventScroll: true })
     }
   }
 
-  /* lifecycle */
   onMounted(() => {
     if (!wrapperRef.value) return
 
-    // first page plus optional initial content
+    // first page + initial content
     const first = makePage()
     wrapperRef.value.appendChild(first)
-
     if (initialHtml) {
       const html = Array.isArray(initialHtml) ? initialHtml.join('') : initialHtml
       first.innerHTML = html
@@ -86,14 +87,16 @@ export function usePagination(initialHtml: string | string[] = '') {
 
     paginate()
 
-    // re-paginate when overflow happens
-    wrapperRef.value.addEventListener('input', () => {
+    // listen to user input and re-paginate when necessary
+    wrapperRef.value.addEventListener('input', e => {
       if (busy) return
-      const last = wrapperRef.value!.lastElementChild as HTMLElement
-      if (last && last.scrollHeight > pageHeight.value) paginate()
+      // only recheck the page currently being edited
+      const page = (e.target as HTMLElement).closest('.page') as HTMLElement | null
+      if (page && page.scrollHeight > pageHeight.value) paginate()
     })
   })
 
+  // re-paginate if pageHeight is changed 
   watch(pageHeight, paginate)
 
   return {
