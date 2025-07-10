@@ -1,4 +1,4 @@
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
 /**
  * usePagination
@@ -72,6 +72,13 @@ export function usePagination(initialHtml: string | string[] = '') {
     }
   }
 
+  /* re-paginate when user types */
+  const inputHandler = (e: Event) => {
+    if (busy) return
+    const page = (e.target as HTMLElement).closest('.page') as HTMLElement | null
+    if (page && page.scrollHeight > pageHeight.value) paginate()
+  }
+
   onMounted(() => {
     if (!wrapperRef.value) return
 
@@ -87,13 +94,13 @@ export function usePagination(initialHtml: string | string[] = '') {
 
     paginate()
 
-    // listen to user input and re-paginate when necessary
-    wrapperRef.value.addEventListener('input', e => {
-      if (busy) return
-      // only recheck the page currently being edited
-      const page = (e.target as HTMLElement).closest('.page') as HTMLElement | null
-      if (page && page.scrollHeight > pageHeight.value) paginate()
-    })
+    // Listener only once
+    wrapperRef.value.addEventListener('input', inputHandler)
+  })
+
+  // remove listener when component is unmounted
+  onBeforeUnmount(() => {
+    wrapperRef.value?.removeEventListener('input', inputHandler)
   })
 
   // re-paginate if pageHeight is changed 
@@ -105,3 +112,4 @@ export function usePagination(initialHtml: string | string[] = '') {
     setPageHeight: (h: number) => (pageHeight.value = h)
   }
 }
+
